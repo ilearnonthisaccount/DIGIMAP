@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import cv2
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -55,6 +56,8 @@ style = torch.randn([num_styles, latent_dim]).to(device)
 
 
 def inference(input_im):
+    if input_im == None:
+        return
     real_A = test_transform(input_im).unsqueeze(0).to(device)
 
     with torch.no_grad():
@@ -68,16 +71,53 @@ def inference(input_im):
         tensor_to_pil = transforms.ToPILImage(mode='RGB')(z.squeeze())
     return tensor_to_pil
 
-title = "GANsNRoses"
-article = "<p style='text-align: center'>GANs N' Roses: Image to Iamge Translation | Obtained from :<a href='https://github.com/mchong6/GANsNRoses'>Github Repo</a></p>"
-demo = gr.Interface(
-    inference, 
-    [gr.inputs.Image(type="pil", label="Input")], 
-    gr.outputs.Image(type="pil"),
-    title=title,
-    # description=description,
-    article=article,
-    allow_flagging = "never",
-    )
+def clear(buff):
+    return
+
+
+
+with gr.Blocks() as demo:
+    gr.Markdown("<h1>GANs N' Roses</h1>")
+    gr.Markdown("""Convert real-life face images into diverse anime versions of themselves. Use the default sample image or replace the input
+                by first clicking X then dragging a new image into the Input box. Crop the image by cliking the pen tool. Click <b>Run</b> to transform the input
+                into an anime version. Click <b>Clear</b> to clear the ouput box.""")
     
+    with gr.Row():
+        with gr.Column():
+            inp = gr.Image(type="pil", value ="sample_images/1.JPG", label="Input")
+            with gr.Row():
+                clr = gr.Button("Clear") #needs implementation
+                run = gr.Button("Run")
+        with gr.Column():
+            out = gr.outputs.Image(type="pil")
+
+    """      
+    gr.Markdown("<h3>Sample Inputs</h3>")
+   
+    with gr.Row():
+            gr.Image(value="sample_images/1.JPG", tools="select")
+            gr.Image(value="sample_images/1.JPG")
+            gr.Image(value="sample_images/1.JPG")
+            gr.Image(value="sample_images/1.JPG")
+            gr.Image(value="sample_images/1.JPG")
+    """
+        
+        
+    #add info here
+    gr.Markdown("""
+                GANs N' Roses (GNR) is an image-to-image framework for face images that uses a multimodal approach with novel definitions for content and style.
+                <b>Content</b> is defined as what changes when a augmentations are applied to a face image. <b>Style</b> is defined as what does not change when augmentations
+                are applied to a face image.
+
+                GNR's implementation borrows heavily from StyleGAN2; however, adversarial loss is derived from the introduced content and style definitions, ensuring diversity of
+                outputs when repeatedly transforming the same input face image.
+
+                The current implementation was trained on the selfie2anime dataset and transforms real human faces into anime faces. Due to limitations of the dataset, GNR works best
+                when working with <b>female face inputs</b> that are <b>cropped to include only the face</b> (no neck and body).
+                """)
+
+    
+    clr.click(fn=clear, inputs = inp, outputs=[out])
+    run.click(fn=inference, inputs=inp, outputs=out)
+  
 demo.launch(share = True)
