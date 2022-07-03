@@ -105,9 +105,12 @@ with gr.Blocks() as demo:
         
     #add info here
     gr.Markdown("""
-                GANs N' Roses (GNR) is an image-to-image framework for face images that uses a multimodal approach with novel definitions for content and style.
-                <b>Content</b> is defined as what changes when a augmentations are applied to a face image. <b>Style</b> is defined as what does not change when augmentations
-                are applied to a face image.
+                GANs N' Roses (GNR) is an image-to-image framework for face images that uses a multimodal approach with novel definitions for content and style. 
+                It uses a Generative Adversarial Network (GAN) on the back end to tranform the image. GAN's are made up of two neural networks: the discriminator and the generator.
+                To explain in simple terms, the discriminator and generator are trained by having them compete against each other. The generator creates something, then the discriminator
+                tries to determine if the image is "real" or "fake". Eventually, both of them will learn from each other and keep getting better at their jobs, creating a good output.
+                In this application, the generator tries to learn two things, content and style. <b>Content</b> is defined as what changes when a augmentations are applied to a face image. 
+                <b>Style</b> is defined as what does not change when augmentations are applied to a face image.
 
                 GNR's implementation borrows heavily from StyleGAN2; however, adversarial loss is derived from the introduced content and style definitions, ensuring diversity of
                 outputs when repeatedly transforming the same input face image.
